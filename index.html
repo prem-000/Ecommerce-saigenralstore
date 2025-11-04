@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Website</title>
+
+    <!-- swiper cdn link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/9.0.0/swiper-bundle.min.css" />
+
+    <!-- font awesome cdn link  -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.1/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+    
+    <!-- custom css file link  -->
+    <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+
+    <!-- header section starts -->
+
+    <header class="header">
+
+        <a href="#" class="logo"><i class="fas fa-shopping-basket"></i> 𝐒𝐀𝐈 𝐒𝐓𝐎𝐑𝐄𝐒 </a>
+
+        <form action="" class="search-form">
+            <input type="search" id="search-box" placeholder="search here...">
+            <label for="search-box" class="fas fa-search"></label>
+        </form>
+
+        
+        <div class="icons">
+            <div class="fas fa-shopping-cart cart-icon" id="cart-btn"></div>
+        </div>
+
+
+        <div class="shopping-cart">
+            <!-- ================== CHECKOUT POPUP ================== -->
+            <div id="checkoutPopup" class="checkout-popup" style="display:none;">
+                <div class="popup-content">
+                    <span id="close-checkout" class="close">&times;</span>
+                    <h2>Checkout</h2>
+
+                    <div id="address-section">
+                        <label for="address">Delivery Address:</label>
+                        <input type="text" id="address" placeholder="Enter your address">
+                        <button id="map-btn" class="btn">Locate on Map</button>
+                    </div>
+
+                    <!-- Add this inside your checkout popup -->
+                    <!-- <div id="payment-section">
+                        <h3>Select Payment Method</h3>
+
+                        <label>
+                            <input type="radio" name="payment" value="cash">
+                            <i class="fas fa-money-bill-wave" style="color:green; margin-right:8px;"></i>
+                            Cash on Delivery
+                        </label><br>
+
+                        <label>
+                            <input type="radio" name="payment" value="phonepe">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/f/f0/PhonePe_Logo.svg" alt="PhonePe" width="25" style="vertical-align:middle; margin-right:8px;">
+                            PhonePe
+                        </label><br>
+
+                        <label>
+                            <input type="radio" name="payment" value="gpay">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Pay_%28GPay%29_Logo.svg" alt="GPay" width="25" style="vertical-align:middle; margin-right:8px;">
+                            Google Pay
+                        </label><br>
+
+                        <label>
+                            <input type="radio" name="payment" value="paytm">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/Paytm_Logo_%282019%29.svg" alt="Paytm" width="25" style="vertical-align:middle; margin-right:8px;">
+                            Paytm
+                        </label>
+                    </div> -->
+
+
+                    <!-- ===== PAYMENT SECTION =====
+                    <div id="payment-section">
+                        <h3>Select Payment Method</h3>
+                        <div class="payment-options">
+                            <label>
+                                <input type="radio" name="payment" value="cash">
+                                <i class="fas fa-money-bill-wave"></i>
+                                Cash
+                            </label>
+                            <label>
+                                <input type="radio" name="payment" value="phonepe">
+                                <img src="https://img.icons8.com/?size=100&id=ugDgmU0qYRe3&format=png&color=000000" width="25">
+                                PhonePe
+                            </label>
+                            <label>
+                                <input type="radio" name="payment" value="gpay">
+                                <img src="https://img.icons8.com/?size=100&id=w0MU3YDSYG7T&format=png&color=000000" width="25">
+                                GPay
+                            </label>
+                            <label>
+                                <input type="radio" name="payment" value="paytm">
+                                <img src="https://upload.wikimedia.org/wikipedia/commons/2/2e/Paytm_Logo_%282019%29.svg" width="25">
+                                Paytm
+                            </label>
+                        </div>
+                    </div> -->
+
+
+
+                    <div id="qr-section" style="display:none; text-align:center; margin-top:10px;">
+                        <canvas id="qr-code"></canvas>
+                    </div>
+
+                    <button id="proceed-btn" class="btn" disabled>Proceed to Pay</button>
+                </div>
+            </div>
+
+
+        </div>
+
+        
+
+        
+
+        
+
+
+
+    </header>
+    <!-- header section ends -->
+
+    <!-- home section starts -->
+
+    <section class="home" id="home">
+        <div class="content">
+            <h3>fresh and <span>organic</span> products for you</h3>
+            <a href="#" class="btn">shop now</a>
+        </div>
+    </section>
+
+    <!-- home section ends -->
+
+    <section class="features" id="features">
+    <h1 class="heading">our <span>features</span></h1>
+    <div class="box-container">
+
+        <div class="box">
+        <img src="https://images.unsplash.com/photo-1461354464878-ad92f492a5a0?auto=format&fit=crop&q=60&w=600" alt="">
+        <h3>fresh and organic</h3>
+        <p class="feature-text" style="display:none;">
+            We deliver only the freshest and most organic produce sourced directly from trusted local farmers. 
+            Our goal is to bring natural and chemical-free food to your doorstep.
+        </p>
+        <a href="#" class="btn readmore-btn">read more</a>
+        </div>
+
+        <div class="box">
+        <img src="https://media.istockphoto.com/id/1336094847/photo/close-up-delivery-boy-give-order-to-customer-pizza-and-coffee-devilery.webp?a=1&b=1&s=612x612&w=0&k=20&c=t4_vYhvQTL6X_brTs1I7fR-C7oWf_bz-5ArtHyBj2po=" alt="">
+        <h3>free delivery</h3>
+        <p class="feature-text" style="display:none;">
+            Enjoy fast and free delivery on all your grocery orders. 
+            We ensure your items reach you fresh and on time — every time!
+        </p>
+        <a href="#" class="btn readmore-btn">read more</a>
+        </div>
+
+        <div class="box">
+        <img src="https://media.istockphoto.com/id/1944802035/photo/close-up-of-customer-hand-scanning-qr-code-with-a-smartphone-for-online-payment.webp?s=1024x1024&w=is&k=20&c=RwIF-v9gc9LS_Ew5Q9A8FSd0Rei-KVF9u3LjbxBigIY=" alt="">
+        <h3>easy payments</h3>
+        <p class="feature-text" style="display:none;">
+            Pay securely and easily using your preferred payment method — 
+            whether it’s cash, UPI, or digital wallets. Convenience at its best!
+        </p>
+        <a href="#" class="btn readmore-btn">read more</a>
+        </div>
+
+    </div>
+    </section>
+
+    <!-- features section starts -->
+
+   
+   <section class="categories" id="categories">
+        <h1 class="heading">Our <span>Products</span></h1>
+
+        <h2 class="sub-heading" style="text-align:center; font-size:2rem;">Fresh <span style="color:var(--orange);">Fruits</span></h2>
+        <div class="product-row">       
+            <div class="box"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ_Oji5JCN9oN-imWu0_MSioiO9cRPqlwQvhA&s"><h3>Apple</h3><div class="price">₹100/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR9yz1d_OrZBKB6TIWRyUtCIPBIjgyDOpybxw&s"><h3>Orange</h3><div class="price">₹100/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://media.istockphoto.com/id/803721418/photo/grape-dark-grape-grapes-with-leaves-isolated-with-clipping-path-full-depth-of-field.jpg?s=612x612&w=0&k=20&c=-jAJlO3WbgFzxwwSmG3pc7bqUva117TYUKKrQW3-RK8="><h3>Grapes</h3><div class="price">₹100/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://cdn.britannica.com/99/143599-050-C3289491/Watermelon.jpg"><h3>Watermelon</h3><div class="price">₹30/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://5.imimg.com/data5/SELLER/Default/2023/9/344928632/OW/RQ/XC/25352890/yellow-mango.jpeg"><h3>Mango</h3><div class="price">₹100/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://images.squarespace-cdn.com/content/v1/5d8fb4801b0f63738ae69475/1632007273503-7GWXT3TWDCORAH4S4FAX/shutterstock_2023486289.jpg"><h3>Guava</h3><div class="price">₹100/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://images.pexels.com/photos/9251083/pexels-photo-9251083.jpeg?cs=srgb&dl=pexels-tony-wu-9251083.jpg&fm=jpg"><h3>Pine apple</h3><div class="price">₹100/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://thumbs.dreamstime.com/b/custard-apple-isolated-white-background-custard-apple-isolated-white-background-246647903.jpg"><h3>Custard Apple</h3><div class="price">₹100/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://cdn.mos.cms.futurecdn.net/42E9as7NaTaAi4A6JcuFwG.jpg"><h3>Banana</h3><div class="price">₹30/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://www.collinsdictionary.com/images/full/strawberry_227472010.jpg?version=4.0.126"><h3>Strawberry</h3><div class="price">₹100/kg</div><a href="#" class="btn">add to cart</a></div>
+        </div>
+
+        <h2 class="sub-heading" style="text-align:center; font-size:2rem;">Fresh <span style="color:var(--orange);">Vegetables</span></h2>
+        <div class="product-row">
+            <div class="box"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTN9-OuOtsl4iecwrOQ4c00iOqngoUdBz1dzQ&s"><h3>Tomato</h3><div class="price">₹24/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_c4mzTsqYoLWHNziM4mHQEEp6-qCek6H7bQ&s"><h3>Onion</h3><div class="price">₹45/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://t3.ftcdn.net/jpg/00/85/79/92/360_F_85799278_0BBGV9OAdQDTLnKwAPBCcg1J7QtiieJY.jpg"><h3>Potato</h3><div class="price">₹20/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS4v0EP7SYBXKNDuoCZ-ib6gu2SZYZa5DHD9Q&s"><h3>Carrot</h3><div class="price">₹40/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://media.istockphoto.com/id/673162168/photo/green-cabbage-isolated-on-white.jpg?s=612x612&w=0&k=20&c=mCc4mXATvCcfp2E9taRJBp-QPYQ_LCj6nE1D7geaqVk="><h3>Cabbage</h3><div class="price">₹20/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://hearty.com.my/wp-content/uploads/2021/07/brinjal.jpg"><h3>Brinjal</h3><div class="price">₹24/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://www.komalasvegemart.com/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/b/e/beet-root-ruby-red.jpg"><h3>Beetroot</h3><div class="price">₹45/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://tse2.mm.bing.net/th/id/OIP.PUSo6xnYYNlloupLHCJiNQHaE7?rs=1&pid=ImgDetMain&o=7&rm=3"><h3>Mushroom</h3><div class="price">₹20/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://bigoven-res.cloudinary.com/image/upload/t_recipe-1280/cauliflower.jpg"><h3>Cauli flower</h3><div class="price">₹40/kg</div><a href="#" class="btn">add to cart</a></div>
+            <div class="box"><img src="https://goodhealthall.com/wp-content/uploads/capsicum-benefits.jpg"><h3>Capsicum</h3><div class="price">₹20/kg</div><a href="#" class="btn">add to cart</a></div>
+            
+        </div>
+
+        <h2 class="sub-heading" style="text-align:center; font-size:2rem;">Daily <span style="color:var(--orange);">Groceries</span></h2>
+        <div class="product-row">
+            <div class="box"><img src="https://cdn.shopify.com/s/files/1/0552/5159/9557/files/how_to_choose_cooking_oil_1024x1024.jpg?v=1678336310"><h3>Cooking Oil</h3><div class="price">₹130/litre</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDJYJdrVbhYUy033hbnWVhM9EenUL-fcYuJg&s"><h3>Rice</h3><div class="price">₹65/kg</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://m.media-amazon.com/images/I/71lEETnSPcL.SL1500.jpg"><h3>Coffee Powder</h3><div class="price">₹70/pack</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://images-static.nykaa.com/media/catalog/product/c/d/cdb763cHEADS00000017.jpg?tr=w-500"><h3>Shampoo</h3><div class="price">₹180/pack</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://www.quickpantry.in/cdn/shop/files/Colgate_Strong_Teeth_Toothpaste_300_g_Quick_Pantry.jpg?v=1731146068&width=1214"><h3>Toothpaste</h3><div class="price">₹150/pack</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://www.quickpantry.in/cdn/shop/files/GodrejNo.1Sandal_TurmericSoapQuickPantry.png?v=1746531711"><h3>Soap</h3><div class="price">₹30/1pc</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://2.wlimg.com/product_images/bc-full/2024/5/10700413/maida-flour-1716790069-7047444.jpeg"><h3>Maida Powder</h3><div class="price">₹65/kg</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://www.tatanutrikorner.com/cdn/shop/files/7160577-1_Tata_Tea_Chakra_Gold_ROS_3D_Packshots_250gm_FOP_0a18e2ba-fe50-445f-8e25-b6502d3544c8-removebg-preview_1.png?v=1748858301"><h3>Tea power</h3><div class="price">₹70/pack</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsWdUeY0dD4xvXZXPfutWFERXwIv8hA3q7Bw&s"><h3>Harpic</h3><div class="price">₹180/pack</div><a href="#" class="btn">add to cart</a></div>
+  <div class="box"><img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ39NTtQufgCH-Xsq-pQ8pYWSq-2oNGpSkn1bs1gEZUm2QdIsnBq9rvi4V8awga2AtOKFI&usqp=CAU"><h3>Hair oil</h3><div class="price">₹150/250 ml</div><a href="#" class="btn">add to cart</a></div>
+        </div>
+    </section>
+
+
+    <section class="footer" id="footer">
+        <div class="box-container">
+            <div class="box">
+                <h3>𝐒𝐀𝐈 𝐒𝐓𝐎𝐑𝐄𝐒 <i class="fas fa-shopping-basket"></i></h3>
+                <div class="share">
+                    <a href="#" class="fab fa-facebook-f"></a>
+                    <a href="#" class="fab fa-twitter"></a>
+                    <a href="#" class="fab fa-instagram"></a>
+                    <a href="#" class="fab fa-linkedin"></a>
+                </div>
+            </div>
+            <div class="box">
+                <h3>contact info</h3>
+                <a href="#" class="links"><i class="fas fa-phone"></i> +91 9182416650 </a>
+                <a href="#" class="links contact-through-email"><i class="fas fa-envelope"></i> Saistores@gmail.com </a>
+                <a href="#" class="links"><i class="fas fa-map-marker-alt"></i> gandhi nagar, sathya sai dist , ap </a>
+            </div>
+            <div class="box">
+                <h3>quick links</h3>
+                <a href="#home" class="links"><i class="fas fa-arrow-right"></i> home </a>
+                <a href="#features" class="links"><i class="fas fa-arrow-right"></i> features </a>
+                <a href="#categories" class="links"><i class="fas fa-arrow-right"></i> categories </a>
+                <a href="#blogs" class="links"><i class="fas fa-arrow-right"></i> blogs </a>
+                <a href="#footer" class="links"><i class="fas fa-arrow-right"></i> contact </a>
+            </div>
+            <div class="box">
+                <h3>newsletter</h3>
+                <p>subscribe for latest updates</p>
+                <input type="email" placeholder="your email" class="email">
+                <input type="submit" value="subscribe" class="btn">
+                <img src="image/payment.png" class="payment-img" alt="">
+            </div>
+        </div>
+        <div class="credit">
+            created by <span>M.Phanindra Reddy </span> | all rights reserved
+        </div>
+    </section>
+
+
+     <!-- bottom navbar starts -->
+    <nav class="bottom-navbar">
+        <a href="#home"><i class="fas fa-home"></i><span>Home</span></a>
+        <a href="#categories"><i class="fas fa-list"></i><span>Categories</span></a>
+        <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+    </nav>
+
+    <!-- bottom navbar ends -->
+
+    
+    <!-- footer section ends -->
+
+    <!-- custom javascript section starts -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/9.0.0/swiper-bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+    <script src="script.js"></script> 
+
+    <!-- custom javascript section ends -->
+
+
+
+</body>
+</html>

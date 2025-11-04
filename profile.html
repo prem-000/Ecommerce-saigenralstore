@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>User Profile | Sai Stores</title>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root { --orange: #ff9500; --muted: #f0f0f3; }
+
+    body {
+      font-family: "Poppins", sans-serif;
+      background: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+
+    header {
+      background: var(--orange);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .wallet-animation {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeOut 3.5s forwards;
+    }
+
+    .coin-container {
+        display: flex;
+        gap: 1rem;
+        animation: floatUp 1.5s ease-in-out infinite alternate;
+    }
+
+    .coin {
+        font-size: 3rem;
+        animation: spin 1s linear infinite;
+    }
+
+    .success-text {
+        color: #00ff84;
+        font-size: 1.5rem;
+        margin-top: 1rem;
+        text-align: center;
+    }
+
+    @keyframes floatUp {
+        0% { transform: translateY(10px); }
+        100% { transform: translateY(-10px); }
+    }
+
+    @keyframes spin {
+        from { transform: rotateY(0); }
+        to { transform: rotateY(360deg); }
+    }
+
+    @keyframes fadeOut {
+        0%, 90% { opacity: 1; }
+        100% { opacity: 0; display: none; }
+    }
+
+    .wallet-btn {
+    background: #facc15;
+    color: #1e1b4b;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    margin-top: 10px;
+    transition: transform 0.2s, box-shadow 0.3s;
+    }
+
+    .wallet-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 15px #fde68a;
+    }
+
+    .wallet-success {
+    text-align: center;
+    animation: fadeIn 0.5s ease;
+    }
+
+    .money {
+    font-size: 2rem;
+    animation: floatMoney 1.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes floatMoney {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+    }
+
+    @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+    }
+
+
+    
+
+
+
+    header a { text-decoration:none; color:white; font-weight:600; }
+    .profile-container { display:flex; min-height:100vh; }
+
+    /* Sidebar */
+    .menu { width:22%; background:white; box-shadow:2px 0 5px rgba(0,0,0,0.06); padding-top:1.5rem; }
+    .menu ul { list-style:none; padding:0; margin:0; }
+    .menu li { padding:1rem 1.5rem; cursor:pointer; color:#444; transition:background .15s; }
+    .menu li.active, .menu li:hover { background:var(--orange); color:#fff; }
+
+    /* Content */
+    .content { flex:1; padding:2rem; background:#fff; }
+    .user-header { display:flex; align-items:center; gap:1rem; border-bottom:2px solid #eee; padding-bottom:1rem; margin-bottom:1.5rem; }
+    .user-header img { width:70px; height:70px; border-radius:50%; object-fit:cover; }
+    .btn { background:var(--orange); color:white; border:none; padding:.7rem 1.2rem; border-radius:6px; cursor:pointer; font-weight:600; }
+    .btn:hover { background:#ff7b00; }
+
+    input, textarea {
+      width:100%; padding:.65rem; margin:.4rem 0; border-radius:6px; border:1px solid #d1d5db; font-size:1rem;
+    }
+
+    /* saved address card */
+    .address-card { background:#fff; border-radius:12px; box-shadow:0 4px 10px rgba(0,0,0,0.06); padding:15px 18px; margin-top:12px; text-align:left; }
+
+    /* Wallet-simple */
+    .wallet-simple { background:var(--muted); border-radius:14px; padding:14px; margin-top:12px; display:flex; align-items:center; justify-content:space-between; box-shadow:inset 6px 6px 12px #e0e5ef, inset -6px -6px 12px #ffffff; }
+    .wallet-simple h4 { margin:0; font-size:1rem; color:#333; }
+    .wallet-simple .balance { font-size:1.2rem; font-weight:700; color:#0b8457; }
+
+    /* Fancy wallet card (glassmorphic) */
+    .wallet-wrap { display:flex; gap:18px; margin-top:18px; flex-wrap:wrap; }
+    .wallet-card {
+      background: rgba(255,255,255,0.22);
+      backdrop-filter: blur(10px);
+      border-radius:16px; padding:18px; width:320px; color:#fff; box-shadow:0 10px 30px rgba(15,23,42,0.08); position:relative;
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .wallet-card h3 { margin:0; font-size:1rem; color:#f3f4f6; }
+    .wallet-balance { font-size:1.8rem; font-weight:700; color:#cffafe; margin-top:10px; }
+    .add-money-btn { margin-top:14px; background:linear-gradient(90deg,#06b6d4,#0ea5e9); border:none; padding:.7rem 1rem; border-radius:10px; cursor:pointer; color:#042; font-weight:700; }
+
+    /* Popup */
+    /* Popup */
+    .popup {
+    display: none; /* ✅ Hidden by default */
+    position: fixed;
+    inset: 0;
+    background: rgba(2, 6, 23, 0.45);
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    }
+
+    .popup-content { background:#fff; width:360px; border-radius:14px; padding:18px; text-align:left; box-shadow:0 12px 40px rgba(2,6,23,0.15); }
+    .popup-content h4 { margin:0 0 10px 0; }
+    .method-row { margin:10px 0; line-height:1.9; }
+    .popup-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:8px; }
+    .btn-ghost { background:transparent; border:1px solid #e5e7eb; padding:.45rem .9rem; border-radius:8px; cursor:pointer; }
+
+    /* small responsive */
+    @media (max-width:900px) {
+      .menu { width:100%; box-shadow:none; border-bottom:2px solid #eee; }
+      .profile-container { flex-direction:column; }
+      .wallet-card, .popup-content { width:90%; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Store</a>
+    <h1>My Profile</h1>
+    <i class="fas fa-user-circle fa-2x"></i>
+  </header>
+
+  <div class="profile-container">
+    <!-- Sidebar -->
+    <nav class="menu" aria-label="profile menu">
+      <ul>
+        <li class="active" onclick="showSection('profile')">My Profile</li>
+        <li onclick="showSection('address')">My Address</li>
+        <li onclick="showSection('orders')">My Orders</li>
+        <li onclick="showSection('wallet')">My Wallet</li>
+        <li onclick="logoutUser()">Logout</li>
+      </ul>
+    </nav>
+
+    <!-- Content -->
+    <div class="content" id="content">
+
+      <div class="user-header">
+        <img id="profilePicPreview" src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="User">
+        <div>
+          <h2 id="displayName">User Name</h2>
+          <p id="displayEmail" style="color:gray;">user@example.com</p>
+        </div>
+      </div>
+
+      <!-- PROFILE SECTION -->
+      <section id="profileSection">
+        <h3>👋 Welcome Back</h3>
+        <p>Enter your details to complete your profile.</p>
+
+        <form id="userForm">
+          <label>Name:</label>
+          <input type="text" id="name" placeholder="Enter your name" required>
+
+          <label>Email:</label>
+          <input type="email" id="email" placeholder="Enter your email" required>
+
+          <label>Mobile Number:</label>
+          <input type="text" id="number" placeholder="Enter your number" required>
+
+          <label>Profile Picture (optional)</label>
+          <input type="file" id="profilePic" accept="image/*">
+
+          <button type="submit" class="btn">Save Profile</button>
+        </form>
+      </section>
+
+      <!-- ADDRESS SECTION -->
+      <section id="addressSection" style="display:none;">
+        <h3>📍 Saved Address</h3>
+        <p>Enter your address (this will be used for deliveries and to enable payment selection in-cart).</p>
+
+        <input type="text" id="address" placeholder="Enter your address">
+        <div style="display:flex; gap:10px; margin-top:.5rem;">
+          <button class="btn" onclick="saveAddress()">Save Address</button>
+          <button class="btn-ghost" onclick="useSavedAddress()">Use Saved Address</button>
+        </div>
+
+        <div id="savedAddress" style="margin-top:1rem;"></div>
+      </section>
+
+      <!-- ORDERS SECTION -->
+      <section id="ordersSection" style="display:none;">
+        <h3>📦 My Orders</h3>
+        <p id="ordersInfo">No orders yet.</p>
+      </section>
+
+      <!-- WALLET SECTION (keeps both) -->
+      <section id="walletSection" style="display:none;">
+        <h3>💰 My Wallet</h3>
+
+        <!-- Simple wallet -->
+        <div class="wallet-simple">
+          <div>
+            <h4>Available Balance</h4>
+            <div class="balance">₹ <span id="walletBalance">0.00</span></div>
+          </div>
+          <div>
+            <button class="btn" onclick="openPopup()">➕ Add Money</button>
+          </div>
+        </div>
+
+        <!-- Fancy wallet card + popup (kept visible below simple wallet) -->
+        <div class="wallet-wrap">
+          <div class="wallet-card" id="fancyWallet">
+            <h3>Sai Stores Wallet</h3>
+            <div class="wallet-balance">₹ <span id="fancyBalance">0.00</span></div>
+            <div style="margin-top:10px; color:rgba(255,255,255,0.8); font-size:.95rem;">
+              Add money, use anywhere in Sai Stores.
+            </div>
+            <button class="add-money-btn" onclick="openPopup()">Add Money</button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+
+  <!-- Popup for add money -->
+  <div class="popup" id="popup">
+    <div class="popup-content" role="dialog" aria-modal="true" aria-labelledby="popupTitle">
+      <h4 id="popupTitle">Add Money to Wallet</h4>
+
+      <label>Amount (₹)</label>
+      <input id="amount" type="number" min="1" placeholder="e.g. 100" />
+
+      <div class="method-row">
+        <strong>Select method</strong><br>
+        <label><input type="radio" name="paymentMethod" value="upi"> UPI</label> &nbsp;
+        <label><input type="radio" name="paymentMethod" value="credit"> Credit Card</label> &nbsp;
+        <label><input type="radio" name="paymentMethod" value="debit"> Debit Card</label> &nbsp;
+        <label><input type="radio" name="paymentMethod" value="netbank"> Netbanking</label>
+      </div>
+
+      <div style="display:flex; gap:10px; justify-content:flex-end;" class="popup-actions">
+        <button class="btn-ghost" onclick="closePopup()">Cancel</button>
+        <button class="btn" onclick="confirmAddMoney()">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Coin sound (hosted public sound) -->
+  <audio id="coinSound" preload="auto" src="https://actions.google.com/sounds/v1/coins/coin.ogg"></audio>
+
+  <script>
+    // -------------------------
+    // Utility & Initializers
+    // -------------------------
+    const permanentAddress = "Sri Sathya Sai District Main Road";
+
+    // Section switching
+    function showSection(section) {
+      document.querySelectorAll('.menu li').forEach(li => li.classList.remove('active'));
+      // find the clicked item and set active (works when called from menu click)
+      const menuItem = Array.from(document.querySelectorAll('.menu li')).find(li => li.textContent.trim().toLowerCase().includes(section));
+      if (menuItem) menuItem.classList.add('active');
+
+      document.getElementById('profileSection').style.display = 'none';
+      document.getElementById('addressSection').style.display = 'none';
+      document.getElementById('ordersSection').style.display = 'none';
+      document.getElementById('walletSection').style.display = 'none';
+
+      if (section === 'profile') document.getElementById('profileSection').style.display = 'block';
+      else if (section === 'address') document.getElementById('addressSection').style.display = 'block';
+      else if (section === 'orders') document.getElementById('ordersSection').style.display = 'block';
+      else if (section === 'wallet') document.getElementById('walletSection').style.display = 'block';
+    }
+
+    // -------------------------
+    // User profile save/load
+    // -------------------------
+    document.getElementById("userForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const number = document.getElementById("number").value.trim();
+
+      if (!name || !email || !number) {
+        alert("Please fill out all profile fields!");
+        return;
+      }
+
+      const user = { name, email, number };
+      localStorage.setItem("user", JSON.stringify(user));
+      loadUser();
+      alert("Profile saved successfully!");
+    });
+
+    function loadUser() {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (user) {
+        document.getElementById("displayName").innerText = user.name;
+        document.getElementById("displayEmail").innerText = user.email;
+        document.getElementById("name").value = user.name;
+        document.getElementById("email").value = user.email;
+        document.getElementById("number").value = user.number;
+      }
+      // profile pic
+      const profilePic = localStorage.getItem("profilePic");
+      if (profilePic) document.getElementById("profilePicPreview").src = profilePic;
+    }
+
+    // profile pic handler
+    const fileInput = document.getElementById("profilePic");
+    const preview = document.getElementById("profilePicPreview");
+    fileInput.addEventListener("change", () => {
+      const file = fileInput.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        preview.src = reader.result;
+        localStorage.setItem("profilePic", reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    // -------------------------
+    // Address save & show
+    // -------------------------
+    function saveAddress() {
+      const address = document.getElementById("address").value.trim();
+      if (!address) { alert("Please enter an address!"); return; }
+      localStorage.setItem("userAddress", address);
+      // Set flag used by cart to enable payment selection
+      localStorage.setItem("hasAddress", "true");
+      showSavedAddress();
+      alert("Address saved successfully!");
+    }
+
+    function useSavedAddress() {
+      // If address exists, open address section and notify
+      const address = localStorage.getItem("userAddress");
+      if (!address) {
+        alert("No saved address found. Please add one.");
+        showSection('address');
+        return;
+      }
+      alert("Saved address is ready to use.");
+      // Optionally you can set a flag like selectedAddress for cart use
+      localStorage.setItem("selectedAddress", address);
+    }
+
+    // show saved address (single place)
+    async function showSavedAddress() {
+      const address = localStorage.getItem("userAddress");
+      const addressDisplay = document.getElementById("savedAddress");
+      if (!addressDisplay) return;
+
+      if (!address) {
+        addressDisplay.innerHTML = `<div style="color:#666">No address saved yet.</div>`;
+        return;
+      }
+
+      const distance = await getDistance(permanentAddress, address); // may return null
+      const mapLink = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(permanentAddress)}&destination=${encodeURIComponent(address)}`;
+
+      // embed map (requires API key to actually work; placeholder included)
+      const embedMap = `
+        <iframe
+          width="100%"
+          height="200"
+          style="border:0; border-radius:10px; margin-top:10px;"
+          loading="lazy"
+          allowfullscreen
+          referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps/embed/v1/directions?key=YOUR_GOOGLE_MAPS_API_KEY&origin=${encodeURIComponent(permanentAddress)}&destination=${encodeURIComponent(address)}">
+        </iframe>
+      `;
+
+      addressDisplay.innerHTML = `
+        <div class="address-card">
+          <h4>Saved Address</h4>
+          <p>${address}</p>
+          <p><strong>Distance from store:</strong> ${distance ? distance + " km" : "N/A"}</p>
+          ${embedMap}
+          <div style="margin-top:8px;"><a class="map-btn" href="${mapLink}" target="_blank">View in Google Maps</a></div>
+        </div>`;
+    }
+
+    // Distance helper (uses Google Distance Matrix via allorigins proxy)
+    async function getDistance(origin, destination) {
+      try {
+        const apiKey = "YOUR_GOOGLE_MAPS_API_KEY"; // replace if you want actual distances
+        if (!apiKey) return null;
+        const url = `https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=${encodeURIComponent(origin)}&destinations=${encodeURIComponent(destination)}&key=${apiKey}`;
+        const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+        const data = await response.json();
+        const parsed = JSON.parse(data.contents);
+        if (parsed.rows && parsed.rows[0] && parsed.rows[0].elements && parsed.rows[0].elements[0].status === "OK") {
+          return parsed.rows[0].elements[0].distance.text.replace(" km", "");
+        }
+        return null;
+      } catch (err) {
+        console.warn("Distance fetch failed:", err);
+        return null;
+      }
+    }
+
+    // -------------------------
+    // Wallet system (both)
+    // -------------------------
+    function loadWallet() {
+      const balance = parseFloat(localStorage.getItem("walletBalance")) || 0;
+      document.getElementById("walletBalance").innerText = balance.toFixed(2);
+      document.getElementById("fancyBalance").innerText = balance.toFixed(2);
+    }
+
+    // Popup open/close
+    function openPopup() { document.getElementById("popup").style.display = "flex"; }
+    function closePopup() { document.getElementById("popup").style.display = "none"; }
+
+    // Confirm add money (runs when user clicks Add in popup)
+    function confirmAddMoney() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const method = document.querySelector('input[name="paymentMethod"]:checked')?.value;
+      if (!amount || amount <= 0) { alert("Please enter a valid amount"); return; }
+      if (!method) { alert("Please select a payment method"); return; }
+
+      // Here we simulate immediate success:
+      // play sound + animate + store in localStorage
+      const coinSound = document.getElementById("coinSound");
+      try { coinSound.currentTime = 0; coinSound.play(); } catch(e) { /* autoplay might be blocked on some browsers */ }
+
+      // Visual burst (light)
+      for (let i=0;i<18;i++){
+        const el = document.createElement("div");
+        el.textContent = ["💸","💰","🪙"][Math.floor(Math.random()*3)];
+        el.style.position = "fixed";
+        el.style.left = (20 + Math.random()*60) + "%";
+        el.style.top = (40 + Math.random()*30) + "%";
+        el.style.fontSize = (16 + Math.random()*36) + "px";
+        el.style.pointerEvents = "none";
+        el.style.opacity = "0.95";
+        el.style.transition = "transform 1.2s ease, opacity 1.2s ease";
+        document.body.appendChild(el);
+        requestAnimationFrame(()=> el.style.transform = `translateY(-200px) rotate(${Math.random()*540}deg)`, el.style.opacity="0");
+        setTimeout(()=> el.remove(), 1300);
+      }
+
+      // Update balance
+      setTimeout(() => {
+        let balance = parseFloat(localStorage.getItem("walletBalance")) || 0;
+        balance += amount;
+        localStorage.setItem("walletBalance", balance.toFixed(2));
+        loadWallet();
+        closePopup();
+        document.getElementById("amount").value = "";
+        document.querySelectorAll('input[name="paymentMethod"]').forEach(r=> r.checked=false);
+        alert(`✅ ₹${amount.toFixed(2)} added via ${method.toUpperCase()}!`);
+      }, 600);
+    }
+
+    // -------------------------
+    // Logout
+    // -------------------------
+    function logoutUser() {
+      if (!confirm("Do you want to logout?")) return;
+      localStorage.removeItem("user");
+      localStorage.removeItem("userAddress");
+      localStorage.removeItem("walletBalance");
+      localStorage.removeItem("profilePic");
+      location.reload();
+    }
+
+    // 💰 Wallet Payment Logic
+    document.addEventListener("DOMContentLoaded", () => {
+        const walletData = JSON.parse(localStorage.getItem("walletPayment"));
+        if (walletData && walletData.from === "cart") {
+            const walletBalanceElem = document.getElementById("walletBalance");
+            let balance = parseFloat(walletBalanceElem.innerText.replace("₹", "")) || 0;
+
+            if (balance >= walletData.amount) {
+                // Deduct amount
+                balance -= walletData.amount;
+                walletBalanceElem.innerText = `₹${balance.toFixed(2)}`;
+                localStorage.setItem("walletBalance", balance);
+                localStorage.removeItem("walletPayment");
+
+                // ✅ Success animation
+                const animation = document.createElement("div");
+                animation.classList.add("wallet-animation");
+                animation.innerHTML = `
+                    <div class="coin-container">
+                        <div class="coin">💰</div>
+                        <div class="coin">💸</div>
+                        <div class="coin">💵</div>
+                    </div>
+                    <h3 class="success-text">Payment Successful! ✅</h3>
+                `;
+                document.body.appendChild(animation);
+
+                setTimeout(() => animation.remove(), 3500);
+            } else {
+                // ❌ Not enough money
+                alert("Insufficient wallet balance! Please add money.");
+                window.location.hash = "#walletSection";
+            }
+        }
+    });
+
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const walletBalanceElem = document.getElementById("walletBalance");
+        const walletAction = document.getElementById("walletAction");
+
+        // Load wallet balance
+        let balance = parseFloat(localStorage.getItem("walletBalance")) || 0;
+        walletBalanceElem.innerText = "₹" + balance.toFixed(2);
+
+        // Check if a payment was initiated from cart
+        const walletData = JSON.parse(localStorage.getItem("walletPayment"));
+        if (walletData) {
+            const amount = parseFloat(walletData.amount);
+
+            walletAction.innerHTML = `
+                <div class="wallet-box">
+                    <h3>🛒 Pending Payment: ₹${amount}</h3>
+                    <p>Choose what you want to do:</p>
+                    ${
+                        balance >= amount
+                            ? `<button id="payNowBtn" class="wallet-btn">Pay ₹${amount} Now</button>`
+                            : `<p class="insufficient">⚠️ Insufficient balance to pay ₹${amount}</p>
+                            <button id="addMoneyBtn" class="wallet-btn">Add Money</button>`
+                    }
+                </div>
+            `;
+
+            // ✅ Pay Now button
+            document.getElementById("payNowBtn")?.addEventListener("click", () => {
+                balance -= amount;
+                walletBalanceElem.innerText = "₹" + balance.toFixed(2);
+                localStorage.setItem("walletBalance", balance);
+                localStorage.removeItem("walletPayment");
+
+                // 💸 Animation inside wallet section
+                const anim = document.createElement("div");
+                anim.className = "wallet-success";
+                anim.innerHTML = `
+                    <div class="money">💸💸💸</div>
+                    <p>Payment of ₹${amount} successful!</p>
+                `;
+                walletAction.innerHTML = ""; // clear wallet box
+                walletAction.appendChild(anim);
+
+                setTimeout(() => {
+                    anim.remove();
+                    alert(`✅ Payment of ₹${amount} completed successfully!`);
+                    window.location.href = "index.html";
+                }, 2500);
+            });
+
+            // 🪙 Add Money button
+            document.getElementById("addMoneyBtn")?.addEventListener("click", () => {
+                const addAmt = prompt("Enter amount to add to wallet:");
+                if (addAmt && !isNaN(addAmt)) {
+                    balance += parseFloat(addAmt);
+                    localStorage.setItem("walletBalance", balance);
+                    walletBalanceElem.innerText = "₹" + balance.toFixed(2);
+                    alert(`💰 Added ₹${addAmt} successfully!`);
+                    window.location.reload(); // refresh wallet to update UI
+                }
+            });
+        }
+    });
+
+
+
+
+    // -------------------------
+    // On load init
+    // -------------------------
+    window.addEventListener("DOMContentLoaded", () => {
+      loadUser();
+      showSavedAddress();
+      loadWallet();
+      // default section is profile
+      showSection('profile');
+    });
+
+    // make functions available in dev console if needed (optional)
+    window.loadWallet = loadWallet;
+    window.loadUser = loadUser;
+    window.showSavedAddress = showSavedAddress;
+  </script>
+</body>
+</html>
