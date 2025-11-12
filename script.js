@@ -1,3 +1,6 @@
+// ================== API BASE URL ==================
+const API_BASE = "https://saigenralstorebackend.onrender.com";
+
 // ================== MENU & UI CONTROL ==================
 const searchForm = document.querySelector('.search-form');
 const shoppingCart = document.querySelector('.shopping-cart');
@@ -28,68 +31,37 @@ document.querySelectorAll(".readmore-btn").forEach(button => {
     });
 });
 
-// ================== PRODUCT SEARCH ==================
-const searchInput = document.querySelector("#search-box");
-const productBoxes = document.querySelectorAll(".categories .product-row .box");
+// ================== LOAD PRODUCTS FROM BACKEND ==================
+async function loadProducts() {
+    const container = document.querySelector(".categories .product-row");
+    if (!container) return;
 
-searchInput?.addEventListener("keyup", () => {
-    const searchText = searchInput.value.toLowerCase().trim();
-    let foundBox = null;
+    try {
+        const res = await fetch(`${API_BASE}/products`);
+        if (!res.ok) throw new Error("Failed to fetch products");
 
-    document.querySelector(".search-popup")?.remove();
+        const products = await res.json();
+        container.innerHTML = "";
 
-    productBoxes.forEach(box => {
-        const productName = box.querySelector("h3").textContent.toLowerCase();
-        if (productName.includes(searchText) && searchText !== "") {
-            foundBox = box;
-        }
-        box.style.display = productName.includes(searchText) ? "inline-block" : "none";
-    });
+        products.forEach(p => {
+            const box = document.createElement("div");
+            box.classList.add("box");
+            box.innerHTML = `
+                <img src="${p.image || 'https://via.placeholder.com/150'}" alt="${p.name}">
+                <h3>${p.name}</h3>
+                <p>${p.description || ''}</p>
+                <div class="price">₹${p.price}</div>
+                <a href="#" class="btn">Add to cart</a>
+            `;
+            container.appendChild(box);
+        });
 
-    let noResultMsg = document.querySelector(".no-result");
-    const categorySection = document.querySelector(".categories");
-
-    if (!foundBox && searchText !== "") {
-        if (!noResultMsg) {
-            noResultMsg = document.createElement("div");
-            noResultMsg.className = "no-result";
-            noResultMsg.textContent = "❌ No product found";
-            noResultMsg.style.textAlign = "center";
-            noResultMsg.style.fontSize = "1.6rem";
-            noResultMsg.style.marginTop = "1rem";
-            categorySection.appendChild(noResultMsg);
-        }
-    } else if (noResultMsg) {
-        noResultMsg.remove();
+        attachCartHandlers();
+    } catch (err) {
+        console.error(err);
+        container.innerHTML = `<p style="text-align:center;color:red;">⚠️ Failed to load products</p>`;
     }
-
-    if (searchText === "") {
-        productBoxes.forEach(box => (box.style.display = "inline-block"));
-        noResultMsg?.remove();
-        return;
-    }
-
-    // Auto scroll + popup
-    if (foundBox) {
-        foundBox.scrollIntoView({ behavior: "smooth", block: "center" });
-
-        const imgSrc = foundBox.querySelector("img").src;
-        const productName = foundBox.querySelector("h3").textContent;
-
-        const popup = document.createElement("div");
-        popup.className = "search-popup";
-        popup.innerHTML = `
-            <img src="${imgSrc}" alt="${productName}">
-            <div class="popup-content">
-                <h4>${productName}</h4>
-                <p>✅ Moved to this product</p>
-            </div>
-        `;
-        document.body.appendChild(popup);
-
-        setTimeout(() => popup.remove(), 3000);
-    }
-});
+}
 
 // ================== CART FUNCTIONALITY ==================
 let cart = [];
@@ -104,7 +76,6 @@ function updateCartUI() {
     const cartIcon = document.querySelector("#cart-btn");
     if (!cartContainer || !cartIcon) return;
 
-    // 🛒 Cart badge setup
     let badge = document.querySelector(".cart-count");
     if (!badge) {
         badge = document.createElement("span");
@@ -117,7 +88,6 @@ function updateCartUI() {
     badge.textContent = totalItems;
     badge.style.display = totalItems > 0 ? "flex" : "none";
 
-    // Clear old cart UI
     cartContainer.querySelectorAll(".cart-item, .total, .address-section, .payment-section, .empty-cart").forEach(el => el.remove());
 
     if (cart.length === 0) {
@@ -136,7 +106,6 @@ function updateCartUI() {
         return;
     }
 
-    // 🧾 Add cart items
     let total = 0;
     cart.forEach(item => {
         total += item.price * item.qty;
@@ -156,7 +125,6 @@ function updateCartUI() {
             </div>
         `;
 
-        // Quantity & delete handlers
         box.querySelector(".fa-trash").addEventListener("click", () => {
             cart = cart.filter(p => p.name !== item.name);
             updateCartUI();
@@ -174,154 +142,97 @@ function updateCartUI() {
         cartContainer.appendChild(box);
     });
 
-    // 💰 Total price
     const totalDiv = document.createElement("div");
     totalDiv.classList.add("total");
     totalDiv.innerHTML = `<h3 style="text-align:center;">Total : ₹${total.toFixed(2)}</h3>`;
     cartContainer.appendChild(totalDiv);
 
-    // 🏠 Address Section
     const addressSection = document.createElement("div");
     addressSection.classList.add("address-section");
     const savedAddress = localStorage.getItem("userAddress") || "";
     addressSection.innerHTML = `
         <h4 style="text-align:center; margin-top:1rem;">Enter Delivery Address 🏠</h4>
-        <select id="savedAddressSelect" style="width:90%; margin:0.5rem auto; display:block; padding:8px; border-radius:10px;">
-            <option value="">Select saved address</option>
-            ${savedAddress ? `<option value="${savedAddress}" selected>${savedAddress}</option>` : ""}
-        </select>
-        <textarea id="addressInput" placeholder="Enter your full address here" rows="3" style="width:90%; display:block; margin:0.5rem auto; border-radius:10px; padding:8px;"></textarea>
+        <textarea id="addressInput" placeholder="Enter your address" rows="3" style="width:90%; margin:0.5rem auto; display:block; border-radius:10px; padding:8px;">${savedAddress}</textarea>
         <button id="saveAddressBtn" class="btn" style="display:block; margin:0.5rem auto;">Save Address</button>
-        <p id="addressSavedMsg" style="text-align:center; color:green; display:${savedAddress ? 'block' : 'none'};">✅ Address saved!</p>
     `;
     cartContainer.appendChild(addressSection);
 
-    // 💳 Payment section (Updated)
     const paymentSection = document.createElement("div");
     paymentSection.classList.add("payment-section");
     paymentSection.innerHTML = `
-        <h4 style="text-align:center; margin-top:1rem;">Select Payment Method</h4>
-        <div class="payment-options" style="text-align:center; opacity:0.6;">
-            <label><input type="radio" name="payment" value="cash" disabled> Cash on Delivery 💵</label><br>
-            <label><input type="radio" name="payment" value="upi" disabled>
-                <img src="https://img.icons8.com/?size=100&id=ugDgmU0qYRe3&format=png&color=000000" width="40">
-                UPI Payment
-            </label><br>
-            <label><input type="radio" name="payment" value="credit" disabled>
-                <img src="https://img.icons8.com/color/48/000000/bank-card-back-side.png" width="40">
-                Credit/Debit Card 💳
-            </label><br>
-            <label><input type="radio" name="payment" value="wallet" disabled>
-                <img src="https://img.icons8.com/fluency/48/000000/wallet.png" width="40">
-                Wallet (Sai Stores)
-            </label><br>
-        </div>
-        <button id="checkout-btn" class="btn" style="display:block; margin:1rem auto;" disabled>Proceed</button>
-        <p id="paymentHint" style="text-align:center; color:orange;">⚠️ Please enter or select an address first</p>
+        <h4 style="text-align:center;">Select Payment Method</h4>
+        <label style="display:block;text-align:center;"><input type="radio" name="payment" value="cash"> Cash on Delivery 💵</label>
+        <button id="checkout-btn" class="btn" style="display:block; margin:1rem auto;">Proceed</button>
     `;
     cartContainer.appendChild(paymentSection);
 
-
-    // 🧠 Address Logic
-    const addressInput = document.getElementById("addressInput");
-    const saveBtn = document.getElementById("saveAddressBtn");
-    const savedSelect = document.getElementById("savedAddressSelect");
-    const paymentInputs = paymentSection.querySelectorAll("input[name='payment']");
-    const proceedBtn = document.getElementById("checkout-btn");
-    const paymentHint = document.getElementById("paymentHint");
-
-    function enablePaymentSection() {
-        paymentInputs.forEach(inp => inp.disabled = false);
-        proceedBtn.disabled = false;
-        paymentSection.querySelector(".payment-options").style.opacity = "1";
-        paymentHint.style.display = "none";
-    }
-
-    // If saved address already exists, enable payment
-    if (savedAddress) enablePaymentSection();
-
-    // Save address button click
-    saveBtn.addEventListener("click", () => {
-        const address = addressInput.value.trim();
-        if (!address) {
-            alert("Please enter your address!");
-            return;
-        }
+    document.getElementById("saveAddressBtn").addEventListener("click", () => {
+        const address = document.getElementById("addressInput").value.trim();
+        if (!address) return alert("Enter address!");
         localStorage.setItem("userAddress", address);
-        document.getElementById("addressSavedMsg").style.display = "block";
-        savedSelect.innerHTML = `<option value="${address}" selected>${address}</option>`;
-        alert("Address saved successfully!");
-        enablePaymentSection();
+        alert("✅ Address saved!");
     });
 
-    // If user selects saved address
-    savedSelect.addEventListener("change", () => {
-        const selected = savedSelect.value;
-        if (selected) {
-            localStorage.setItem("userAddress", selected);
-            enablePaymentSection();
-        }
-    });
+    document.getElementById("checkout-btn").addEventListener("click", async () => {
+        const address = localStorage.getItem("userAddress");
+        if (!address) return alert("Enter delivery address first!");
 
-    // Proceed button logic
-    proceedBtn.addEventListener("click", () => {
-        const selectedPayment = document.querySelector('input[name="payment"]:checked')?.value;
-        if (!selectedPayment) {
-            alert("Please select a payment method!");
-            return;
-        }
-
-        const totalAmount = parseFloat(document.querySelector(".total h3").innerText.replace("Total : ₹", ""));
-
-        if (selectedPayment === "wallet") {
-            localStorage.setItem("walletPayment", JSON.stringify({ amount: totalAmount }));
-            window.location.href = "profile.html#walletSection"; // Redirect to wallet section
-            return;
-        }
-
-        if (selectedPayment === "upi") {
-            window.location.href = "upipayment.html";
-        } else if (selectedPayment === "credit") {
-            window.location.href = "credit.html";
-        } else {
-            showReceiptPopup(); // Cash on Delivery
+        try {
+            await saveOrderToBackend(cart);
+            showReceiptPopup();
+            cart = [];
+            updateCartUI();
+        } catch (err) {
+            alert("Order failed: " + err.message);
         }
     });
 
-
-
-    // Save data
     localStorage.setItem("userCart", JSON.stringify(cart));
     localStorage.setItem("userTotal", total.toFixed(2));
 }
 
+// ================== SAVE ORDER TO BACKEND ==================
+async function saveOrderToBackend(cartItems) {
+    for (const item of cartItems) {
+        const orderData = {
+            user_id: 1, // placeholder
+            product_id: item.id || 1,
+            quantity: item.qty
+        };
+        const res = await fetch(`${API_BASE}/orders`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderData)
+        });
+        if (!res.ok) throw new Error(await res.text());
+    }
+}
 
 // ================== ADD TO CART ==================
-document.querySelectorAll(".product-row .box .btn").forEach(btn => {
-    btn.addEventListener("click", e => {
-        e.preventDefault();
-        const box = btn.closest(".box");
-        const name = box.querySelector("h3").textContent;
-        const price = extractPrice(box.querySelector(".price").textContent);
-        const img = box.querySelector("img").src;
+function attachCartHandlers() {
+    document.querySelectorAll(".product-row .box .btn").forEach(btn => {
+        btn.addEventListener("click", e => {
+            e.preventDefault();
+            const box = btn.closest(".box");
+            const name = box.querySelector("h3").textContent;
+            const price = extractPrice(box.querySelector(".price").textContent);
+            const img = box.querySelector("img").src;
 
-        const existingItem = cart.find(item => item.name === name);
-        if (existingItem) {
-            existingItem.qty++;
-        } else {
-            cart.push({ name, price, img, qty: 1 });
-        }
+            const existingItem = cart.find(item => item.name === name);
+            if (existingItem) existingItem.qty++;
+            else cart.push({ name, price, img, qty: 1 });
 
-        btn.textContent = "Added ✅";
-        btn.style.background = "green";
-        setTimeout(() => {
-            btn.textContent = "Add to cart";
-            btn.style.background = "";
-        }, 3000);
+            btn.textContent = "Added ✅";
+            btn.style.background = "green";
+            setTimeout(() => {
+                btn.textContent = "Add to cart";
+                btn.style.background = "";
+            }, 3000);
 
-        updateCartUI();
+            updateCartUI();
+        });
     });
-});
+}
 
 // ================== RECEIPT POPUP ==================
 function showReceiptPopup() {
@@ -443,4 +354,5 @@ if (cartData.length === 0) {
     `;
     orderList.appendChild(div);
   });
+
 } 
