@@ -43,7 +43,7 @@ searchInput?.addEventListener("keyup", () => {
         if (productName.includes(searchText) && searchText !== "") {
             foundBox = box;
         }
-        box.style.display = productName.includes(searchText) ? "inline-block" : "none";
+        box.style.display = productName.includes(searchText) || searchText === "" ? "inline-block" : "none";
     });
 
     let noResultMsg = document.querySelector(".no-result");
@@ -63,13 +63,8 @@ searchInput?.addEventListener("keyup", () => {
         noResultMsg.remove();
     }
 
-    if (searchText === "") {
-        productBoxes.forEach(box => (box.style.display = "inline-block"));
-        noResultMsg?.remove();
-        return;
-    }
+    if (!searchText) return;
 
-    // Auto scroll + popup
     if (foundBox) {
         foundBox.scrollIntoView({ behavior: "smooth", block: "center" });
 
@@ -92,24 +87,21 @@ searchInput?.addEventListener("keyup", () => {
 });
 
 // ================== CART FUNCTIONALITY ==================
-let cart = [];
+let cart = JSON.parse(localStorage.getItem("userCart")) || [];
 
 function extractPrice(priceText) {
-    const num = priceText.replace(/[^\d.]/g, "");
-    return parseFloat(num) || 0;
+    return parseFloat(priceText.replace(/[^\d.]/g, "")) || 0;
 }
 
 function updateCartUI() {
     const cartContainer = document.querySelector(".shopping-cart");
-    const cartIcon = document.querySelector("#cart-btn");
-    if (!cartContainer || !cartIcon) return;
+    if (!cartContainer) return;
 
-    // 🛒 Cart badge setup
+    const cartIcon = document.querySelector("#cart-btn");
     let badge = document.querySelector(".cart-count");
     if (!badge) {
         badge = document.createElement("span");
         badge.classList.add("cart-count");
-        cartIcon.style.position = "relative";
         cartIcon.appendChild(badge);
     }
 
@@ -117,7 +109,6 @@ function updateCartUI() {
     badge.textContent = totalItems;
     badge.style.display = totalItems > 0 ? "flex" : "none";
 
-    // Clear old cart UI
     cartContainer.querySelectorAll(".cart-item, .total, .address-section, .payment-section, .empty-cart").forEach(el => el.remove());
 
     if (cart.length === 0) {
@@ -136,7 +127,6 @@ function updateCartUI() {
         return;
     }
 
-    // 🧾 Add cart items
     let total = 0;
     cart.forEach(item => {
         total += item.price * item.qty;
@@ -156,7 +146,6 @@ function updateCartUI() {
             </div>
         `;
 
-        // Quantity & delete handlers
         box.querySelector(".fa-trash").addEventListener("click", () => {
             cart = cart.filter(p => p.name !== item.name);
             updateCartUI();
@@ -174,13 +163,11 @@ function updateCartUI() {
         cartContainer.appendChild(box);
     });
 
-    // 💰 Total price
     const totalDiv = document.createElement("div");
     totalDiv.classList.add("total");
-    totalDiv.innerHTML = <h3 style="text-align:center;">Total : ₹${total.toFixed(2)}</h3>;
+    totalDiv.innerHTML = `<h3 style="text-align:center;">Total : ₹${total.toFixed(2)}</h3>`;
     cartContainer.appendChild(totalDiv);
 
-    // 🏠 Address Section
     const addressSection = document.createElement("div");
     addressSection.classList.add("address-section");
     const savedAddress = localStorage.getItem("userAddress") || "";
@@ -188,7 +175,7 @@ function updateCartUI() {
         <h4 style="text-align:center; margin-top:1rem;">Enter Delivery Address 🏠</h4>
         <select id="savedAddressSelect" style="width:90%; margin:0.5rem auto; display:block; padding:8px; border-radius:10px;">
             <option value="">Select saved address</option>
-            ${savedAddress ? <option value="${savedAddress}" selected>${savedAddress}</option> : ""}
+            ${savedAddress ? `<option value="${savedAddress}" selected>${savedAddress}</option>` : ""}
         </select>
         <textarea id="addressInput" placeholder="Enter your full address here" rows="3" style="width:90%; display:block; margin:0.5rem auto; border-radius:10px; padding:8px;"></textarea>
         <button id="saveAddressBtn" class="btn" style="display:block; margin:0.5rem auto;">Save Address</button>
@@ -196,33 +183,21 @@ function updateCartUI() {
     `;
     cartContainer.appendChild(addressSection);
 
-    // 💳 Payment section (Updated)
     const paymentSection = document.createElement("div");
     paymentSection.classList.add("payment-section");
     paymentSection.innerHTML = `
         <h4 style="text-align:center; margin-top:1rem;">Select Payment Method</h4>
         <div class="payment-options" style="text-align:center; opacity:0.6;">
             <label><input type="radio" name="payment" value="cash" disabled> Cash on Delivery 💵</label><br>
-            <label><input type="radio" name="payment" value="upi" disabled>
-                <img src="https://img.icons8.com/?size=100&id=ugDgmU0qYRe3&format=png&color=000000" width="40">
-                UPI Payment
-            </label><br>
-            <label><input type="radio" name="payment" value="credit" disabled>
-                <img src="https://img.icons8.com/color/48/000000/bank-card-back-side.png" width="40">
-                Credit/Debit Card 💳
-            </label><br>
-            <label><input type="radio" name="payment" value="wallet" disabled>
-                <img src="https://img.icons8.com/fluency/48/000000/wallet.png" width="40">
-                Wallet (Sai Stores)
-            </label><br>
+            <label><input type="radio" name="payment" value="upi" disabled> UPI Payment</label><br>
+            <label><input type="radio" name="payment" value="credit" disabled> Credit/Debit Card 💳</label><br>
+            <label><input type="radio" name="payment" value="wallet" disabled> Wallet Payment</label><br>
         </div>
         <button id="checkout-btn" class="btn" style="display:block; margin:1rem auto;" disabled>Proceed</button>
         <p id="paymentHint" style="text-align:center; color:orange;">⚠ Please enter or select an address first</p>
     `;
     cartContainer.appendChild(paymentSection);
 
-
-    // 🧠 Address Logic
     const addressInput = document.getElementById("addressInput");
     const saveBtn = document.getElementById("saveAddressBtn");
     const savedSelect = document.getElementById("savedAddressSelect");
@@ -230,17 +205,15 @@ function updateCartUI() {
     const proceedBtn = document.getElementById("checkout-btn");
     const paymentHint = document.getElementById("paymentHint");
 
-    function enablePaymentSection() {
+    const enablePayment = () => {
         paymentInputs.forEach(inp => inp.disabled = false);
         proceedBtn.disabled = false;
         paymentSection.querySelector(".payment-options").style.opacity = "1";
         paymentHint.style.display = "none";
-    }
+    };
 
-    // If saved address already exists, enable payment
-    if (savedAddress) enablePaymentSection();
+    if (savedAddress) enablePayment();
 
-    // Save address button click
     saveBtn.addEventListener("click", () => {
         const address = addressInput.value.trim();
         if (!address) {
@@ -249,54 +222,35 @@ function updateCartUI() {
         }
         localStorage.setItem("userAddress", address);
         document.getElementById("addressSavedMsg").style.display = "block";
-        savedSelect.innerHTML = <option value="${address}" selected>${address}</option>;
-        alert("Address saved successfully!");
-        enablePaymentSection();
+        savedSelect.innerHTML = `<option value="${address}" selected>${address}</option>`;
+        enablePayment();
     });
 
-    // If user selects saved address
     savedSelect.addEventListener("change", () => {
-        const selected = savedSelect.value;
-        if (selected) {
-            localStorage.setItem("userAddress", selected);
-            enablePaymentSection();
-        }
+        if (savedSelect.value) enablePayment();
     });
 
-    // Proceed button logic
     proceedBtn.addEventListener("click", () => {
         const selectedPayment = document.querySelector('input[name="payment"]:checked')?.value;
-        if (!selectedPayment) {
-            alert("Please select a payment method!");
-            return;
-        }
+        if (!selectedPayment) return alert("Select a payment method!");
 
-        const totalAmount = parseFloat(document.querySelector(".total h3").innerText.replace("Total : ₹", ""));
+        localStorage.setItem("userTotal", total.toFixed(2));
+        localStorage.setItem("userCart", JSON.stringify(cart));
 
         if (selectedPayment === "wallet") {
-            localStorage.setItem("walletPayment", JSON.stringify({ amount: totalAmount }));
-            window.location.href = "profile.html#walletSection"; // Redirect to wallet section
-            return;
-        }
-
-        if (selectedPayment === "upi") {
+            window.location.href = "profile.html#walletSection";
+        } else if (selectedPayment === "upi") {
             window.location.href = "upipayment.html";
         } else if (selectedPayment === "credit") {
             window.location.href = "credit.html";
         } else {
-            showReceiptPopup(); // Cash on Delivery
+            showReceiptPopup();
         }
     });
 
-
-
-    // Save data
     localStorage.setItem("userCart", JSON.stringify(cart));
-    localStorage.setItem("userTotal", total.toFixed(2));
 }
 
-
-// ================== ADD TO CART ==================
 document.querySelectorAll(".product-row .box .btn").forEach(btn => {
     btn.addEventListener("click", e => {
         e.preventDefault();
@@ -305,19 +259,16 @@ document.querySelectorAll(".product-row .box .btn").forEach(btn => {
         const price = extractPrice(box.querySelector(".price").textContent);
         const img = box.querySelector("img").src;
 
-        const existingItem = cart.find(item => item.name === name);
-        if (existingItem) {
-            existingItem.qty++;
-        } else {
-            cart.push({ name, price, img, qty: 1 });
-        }
+        const item = cart.find(i => i.name === name);
+        if (item) item.qty++;
+        else cart.push({ name, price, img, qty: 1 });
 
         btn.textContent = "Added ✅";
         btn.style.background = "green";
         setTimeout(() => {
             btn.textContent = "Add to cart";
             btn.style.background = "";
-        }, 3000);
+        }, 1000);
 
         updateCartUI();
     });
@@ -333,114 +284,89 @@ function showReceiptPopup() {
             <p>Order Confirmed Successfully!</p>
             <p>Payment: Cash on Delivery</p>
             <p>Thank you for shopping 💚</p>
-            <div class="delivery-animation">
-                <img src="https://img.icons8.com/color/96/delivery--v1.png" alt="Delivery Truck" />
-                <div class="road"></div>
-            </div>
             <button id="close-receipt" class="btn">Close</button>
         </div>
     `;
     document.body.appendChild(receipt);
 
-    document.getElementById("close-receipt").addEventListener("click", () => {
-        receipt.remove();
-    });
+    document.getElementById("close-receipt").addEventListener("click", () => receipt.remove());
 
     createPaperConfetti();
 }
 
 // ================== CELEBRATION EFFECT ==================
 function createPaperConfetti() {
-    const colors = [
-        "#ff595e", "#ffca3a", "#8ac926",
-        "#1982c4", "#6a4c93", "#ff9f1c",
-        "#ff577f", "#06d6a0", "#8338ec", "#ffd60a"
-    ];
-
+    const colors = ["#ff595e", "#ffca3a", "#8ac926", "#1982c4", "#6a4c93", "#ff9f1c"];
     const shapes = ["square", "circle", "triangle", "strip"];
 
-    for (let i = 0; i < 120; i++) { // 🎉 More papers (120 pieces)
+    for (let i = 0; i < 60; i++) {
         const paper = document.createElement("div");
         paper.classList.add("paper-piece");
         document.body.appendChild(paper);
 
         const shape = shapes[Math.floor(Math.random() * shapes.length)];
+        const size = Math.random() * 12 + 8;
         const color = colors[Math.floor(Math.random() * colors.length)];
-        const size = Math.random() * 10 + 6;
 
-        // 🎨 Base styles
         paper.style.position = "fixed";
         paper.style.top = "-10px";
-        paper.style.left = ${Math.random() * 100}vw;
-        paper.style.zIndex = 9999;
-        paper.style.opacity = Math.random() * 0.9 + 0.4;
+        paper.style.left = `${Math.random() * 100}vw`;
         paper.style.background = color;
+        paper.style.zIndex = 9999;
         paper.style.pointerEvents = "none";
-        paper.style.animation = fall ${Math.random() * 3 + 2}s linear forwards;
+        paper.style.animation = `fall ${Math.random() * 3 + 2}s linear forwards`;
 
-        // 🟦 Shape types
         if (shape === "circle") {
             paper.style.borderRadius = "50%";
-            paper.style.width = ${size}px;
-            paper.style.height = ${size}px;
+            paper.style.width = `${size}px`;
+            paper.style.height = `${size}px`;
         } else if (shape === "triangle") {
-            paper.style.width = "0";
-            paper.style.height = "0";
-            paper.style.borderLeft = ${size / 1.5}px solid transparent;
-            paper.style.borderRight = ${size / 1.5}px solid transparent;
-            paper.style.borderBottom = ${size * 1.8}px solid ${color};
+            paper.style.borderLeft = `${size / 2}px solid transparent`;
+            paper.style.borderRight = `${size / 2}px solid transparent`;
+            paper.style.borderBottom = `${size}px solid ${color}`;
             paper.style.background = "none";
-        } else if (shape === "strip") {
-            paper.style.width = ${size * 0.6}px;
-            paper.style.height = ${size * 3}px;
-            paper.style.borderRadius = "2px";
         } else {
-            // square default
-            paper.style.width = ${size}px;
-            paper.style.height = ${size}px;
+            paper.style.width = `${size}px`;
+            paper.style.height = `${size}px`;
         }
 
-        // 🎢 Random spin + horizontal drift
-        const spin = Math.random() * 720;
+        const spin = Math.random() * 360;
         const drift = Math.random() * 50 - 25;
-        paper.style.transform = rotate(${spin}deg) translateX(${drift}px);
-        paper.style.transition = "transform 0.3s ease-in-out";
+        paper.style.transform = `rotate(${spin}deg) translateX(${drift}px)`;
 
-        setTimeout(() => paper.remove(), 5000);
+        setTimeout(() => paper.remove(), 4000);
     }
 }
-
 
 // ================== Initialize ==================
 updateCartUI();
 
-// profile.js
 
-// Fetch stored cart data
+// ================== PROFILE.JS ==================
 const cartData = JSON.parse(localStorage.getItem("userCart")) || [];
 const totalSpent = localStorage.getItem("userTotal") || 0;
 
-// Update user info
-document.getElementById("totalSpent").textContent = totalSpent;
-document.getElementById("totalItems").textContent = cartData.length;
+if (document.getElementById("totalSpent")) {
+    document.getElementById("totalSpent").textContent = totalSpent;
+    document.getElementById("totalItems").textContent = cartData.reduce((sum, i) => sum + i.qty, 0);
 
-// Render order list
-const orderList = document.getElementById("orderList");
+    const orderList = document.getElementById("orderList");
 
-if (cartData.length === 0) {
-  orderList.innerHTML = <p style="text-align:center; color:gray;">No items in your cart.</p>;
-} else {
-  cartData.forEach(item => {
-    const div = document.createElement("div");
-    div.classList.add("order-item");
-    div.innerHTML = `
-      <img src="${item.img}" alt="${item.name}">
-      <div>
-        <h4>${item.name}</h4>
-        <p>Qty: ${item.qty}</p>
-      </div>
-      <strong>₹${item.price * item.qty}</strong>
-    `;
-    orderList.appendChild(div);
-  });
+    if (!cartData.length) {
+        orderList.innerHTML = `<p style="text-align:center; color:gray;">No items in your cart.</p>`;
+    } else {
+        cartData.forEach(item => {
+            const div = document.createElement("div");
+            div.classList.add("order-item");
+            div.innerHTML = `
+                <img src="${item.img}" alt="${item.name}">
+                <div>
+                    <h4>${item.name}</h4>
+                    <p>Qty: ${item.qty}</p>
+                </div>
+                <strong>₹${item.price * item.qty}</strong>
+            `;
+            orderList.appendChild(div);
+        });
+    }
 }
