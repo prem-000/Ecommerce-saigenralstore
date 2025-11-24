@@ -225,23 +225,42 @@ body {
 }
 
 /* 🛒 Cart Count Badge */
+/* === CART ICON POSITIONING (MANDATORY) === */
+#cart-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* === CART COUNT BADGE (CORRECTED) === */
 .cart-count {
     position: absolute;
     top: -8px;
     right: -8px;
-    background: #ff4d4f;
+    background: #ff4d4f; /* Unique badge color */
     color: #fff;
     font-size: 12px;
     font-weight: bold;
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+    box-shadow: 0 0 6px rgba(0,0,0,0.25);
+    pointer-events: none;
     animation: pop 0.3s ease;
+    z-index: 9999;
 }
+
+/* Badge Appearance Animation */
+@keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    80% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
 
 @keyframes pop {
     0% { transform: scale(0); }
